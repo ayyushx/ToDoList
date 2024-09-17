@@ -37,12 +37,24 @@ def showQueries():
 
 @app.route("/delete/<int:sno>")
 def delete(sno):
-    delToDo = ToDo.query.filter_by(sno=sno).first()
+    delToDo = ToDo.query.filter_by(sno=sno).first() #.first() is used to make sure to select the first query related to it
     db.session.delete(delToDo)
     db.session.commit()
     return redirect('/')
-
-
+@app.route("/update/<int:sno>",methods = ["GET" , "POST"])
+def update(sno):
+    if request.method == "POST":
+        name = request.form['name']
+        desc = request.form['desc']
+        todo = ToDo.query.filter_by(sno=sno).first()
+        todo.name = name
+        todo.desc = desc
+        db.session.add(todo)
+        db.session.commit()
+        redirect('/')
+    todo = ToDo.query.filter_by(sno=sno).first()
+    return render_template('update.html',todo=todo)
+        
 
 if __name__ == "__main__":
     app.run( debug = True , port  = 8000)
